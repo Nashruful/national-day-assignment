@@ -6,6 +6,29 @@ class QuestionsData {
   List<QuestionModels> multipleChoiceQ =
       dataQ.map((e) => QuestionModels.fromJson(e)).toList();
   final box = GetStorage();
+  int score = 0;
+  int currentQuestionIndex = 0;
 
-  checkAnswer() {}
+  QuestionsData() {
+    loadData();
+  }
+
+  loadData() {
+    if (box.hasData("currentQuestion")) {
+      currentQuestionIndex = box.read("currentQuestion");
+      score = box.read("score");
+    }
+  }
+
+  resetData() {
+    box.remove("currentQuestion");
+  }
+
+  currentScore(){
+    box.write("score", score);
+  }
+
+  nextQuestion() {
+    box.write("currentQuestion", currentQuestionIndex);
+  }
 }

@@ -1,3 +1,5 @@
+import 'package:assignment16/data_layer/questions_data.dart';
+import 'package:assignment16/pages/questions_screen.dart';
 import 'package:assignment16/pages/start_question_screen.dart';
 import 'package:assignment16/setup/init.dart';
 import 'package:flutter/material.dart';
@@ -17,7 +19,9 @@ class MainApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       theme: ThemeData(
           textTheme: GoogleFonts.dmSansTextTheme(Theme.of(context).textTheme)),
-      home: const StartQuestionScreen(),
+      home: getIt.get<QuestionsData>().box.hasData("currentQuestion")
+          ? const QuestionsScreen()
+          : const StartQuestionScreen(),
     );
   }
 }

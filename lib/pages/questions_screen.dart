@@ -13,39 +13,51 @@ class QuestionsScreen extends StatefulWidget {
 }
 
 class _QuestionsScreenState extends State<QuestionsScreen> {
-  int _currentQuestionIndex = 0;
-  String? _selectedAnswer;
-  String? _correctAnswer;
+  String? selectedAnswer;
+  String? correctAnswer;
+  bool isLocked = true;
 
-  void _checkAnswer(String selected) {
+  void checkAnswer(String selected) {
     setState(() {
-      _selectedAnswer = selected;
-      _correctAnswer = getIt
+      isLocked = false;
+      selectedAnswer = selected;
+      correctAnswer = getIt
           .get<QuestionsData>()
-          .multipleChoiceQ[_currentQuestionIndex]
+          .multipleChoiceQ[getIt.get<QuestionsData>().currentQuestionIndex]
           .answer;
+      if (selectedAnswer == correctAnswer) {
+        getIt.get<QuestionsData>().score++;
+      }
     });
   }
 
-  Color _getBorderColor(String option) {
-    if (_selectedAnswer == null) return const Color(0xffC9FBB1);
-    if (option == _correctAnswer) return const Color(0xff1C8D21);
-    if (option == _selectedAnswer) return const Color(0xffF0676F);
-    return const Color(0xffC9FBB1);
+  Color getSelectedColor(String option) {
+    if (option == selectedAnswer) {
+      if (selectedAnswer == correctAnswer) {
+        return const Color(0xff1C8D21);
+      } else {
+        return const Color(0xffF0676F);
+      }
+    } else {
+      return const Color(0xffC9FBB1);
+    }
   }
 
   @override
   Widget build(BuildContext context) {
-    final currentQuestion =
-        getIt.get<QuestionsData>().multipleChoiceQ[_currentQuestionIndex];
+    final currentQuestion = getIt
+        .get<QuestionsData>()
+        .multipleChoiceQ[getIt.get<QuestionsData>().currentQuestionIndex];
     return Scaffold(
       body: Center(
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [
+            const SizedBox(
+              height: 55,
+            ),
             SizedBox(
               width: 320,
-              height: 60,
               child: TextCustom(
                 text: currentQuestion.question!,
                 color: Colors.black,
@@ -60,27 +72,27 @@ class _QuestionsScreenState extends State<QuestionsScreen> {
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
                   SelectableButton(
-                      color: _getBorderColor("A"),
+                      color: getSelectedColor("A"),
                       onPressed: () =>
-                          _selectedAnswer == null ? _checkAnswer("A") : null,
+                          selectedAnswer == null ? checkAnswer("A") : null,
                       title: currentQuestion.a ?? '',
                       numberOfOption: "1"),
                   SelectableButton(
-                      color: _getBorderColor("B"),
+                      color: getSelectedColor("B"),
                       onPressed: () =>
-                          _selectedAnswer == null ? _checkAnswer("B") : null,
+                          selectedAnswer == null ? checkAnswer("B") : null,
                       title: currentQuestion.b ?? '',
                       numberOfOption: "2"),
                   SelectableButton(
-                      color: _getBorderColor("C"),
+                      color: getSelectedColor("C"),
                       onPressed: () =>
-                          _selectedAnswer == null ? _checkAnswer("C") : null,
+                          selectedAnswer == null ? checkAnswer("C") : null,
                       title: currentQuestion.c ?? '',
                       numberOfOption: "3"),
                   SelectableButton(
-                      color: _getBorderColor("D"),
+                      color: getSelectedColor("D"),
                       onPressed: () =>
-                          _selectedAnswer == null ? _checkAnswer("D") : null,
+                          selectedAnswer == null ? checkAnswer("D") : null,
                       title: currentQuestion.d ?? '',
                       numberOfOption: "4")
                 ],
@@ -88,19 +100,28 @@ class _QuestionsScreenState extends State<QuestionsScreen> {
             ),
             GestureDetector(
               onTap: () {
-                setState(() {
-                  if (_currentQuestionIndex <
-                      getIt.get<QuestionsData>().multipleChoiceQ.length - 1) {
-                    _currentQuestionIndex++;
-                    _selectedAnswer = null;
-                    _correctAnswer = null;
-                  } else {
-                    Navigator.pushReplacement(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => const WinnerScreen()));
-                  }
-                });
+                isLocked
+                    ? null
+                    : setState(() {
+                        if (getIt.get<QuestionsData>().currentQuestionIndex <
+                            getIt.get<QuestionsData>().multipleChoiceQ.length -
+                                1) {
+                          getIt.get<QuestionsData>().currentQuestionIndex++;
+                          getIt.get<QuestionsData>().nextQuestion();
+                          getIt.get<QuestionsData>().currentScore();
+                          selectedAnswer = null;
+                          correctAnswer = null;
+                          isLocked = true;
+                        } else {
+                          getIt.get<QuestionsData>().resetData();
+                          Navigator.pushReplacement(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => WinnerScreen(
+                                        score: getIt.get<QuestionsData>().score,
+                                      )));
+                        }
+                      });
               },
               child: Container(
                 height: 81.44,
@@ -116,7 +137,10 @@ class _QuestionsScreenState extends State<QuestionsScreen> {
                       fontSize: 22.53),
                 ),
               ),
-            )
+            ),
+            const SizedBox(
+              height: 15,
+            ),
           ],
         ),
       ),
