@@ -9,6 +9,9 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  get_it: ^7.7.0
+  get_storage: ^2.1.1
+  lottie: ^3.1.2
 
 dev_dependencies:
   flutter_test:
@@ -17,3 +20,7 @@ dev_dependencies:
 
 flutter:
   uses-material-design: true
+  assets:
+    - assets/
+    - assets/animation/
+    - assets/images/

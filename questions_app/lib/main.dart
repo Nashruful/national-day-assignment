@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:questions_app/screen/home_screen.dart';
+import 'package:questions_app/service/setup.dart';
 
 void main() {
+  setup();
   runApp(const MainApp());
 }
 
@@ -10,8 +12,6 @@ class MainApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
-      home: HomeScreen()
-    );
+    return const MaterialApp(home: HomeScreen());
   }
 }
